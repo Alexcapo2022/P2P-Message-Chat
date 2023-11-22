@@ -2,14 +2,16 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
-const connectDB = require('./app/database/connectDB');
-const Message = require('./app/model/Message');
+
+const Message = require('./src/models/Message');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 // Conectar a la base de datos MongoDB
+require('dotenv').config();
+const connectDB = require('./src/config/connectDB');
 connectDB();
 
 // Middleware para analizar el cuerpo de las solicitudes

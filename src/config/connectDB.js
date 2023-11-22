@@ -1,9 +1,6 @@
-// database/connectDB.js
-const mongoose = require('mongoose');
 
-const password = 'euler2020';
-const dbName = 'BookSwap';
-const uri = `mongodb+srv://20192659:${password}@cluster0.d9h4rdp.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+const mongoose = require('mongoose');
+const uri = process.env.DB_URI;
 
 const connectDB = async () => {
   try {
@@ -19,3 +16,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+
