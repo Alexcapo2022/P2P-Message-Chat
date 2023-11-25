@@ -1,21 +1,34 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const bodyParser = require('body-parser');
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import cors from "cors"
+import morgan from 'morgan';
+import connectDB from './src/config/connectDB.js';
 
-const Message = require('./src/models/Message');
+import Message from './src/models/Message.js';
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+const server = createServer(app);
+const io = new Server(server);
+
+
 
 // Conectar a la base de datos MongoDB
-require('dotenv').config();
-const connectDB = require('./src/config/connectDB');
 connectDB();
 
+//Middlewares
+app.use(cors())
 // Middleware para analizar el cuerpo de las solicitudes
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(morgan("dev"))
+
+//RUTAS
+app.get("/", (req, res) => {
+  res.send("Bienvenidos al API de BookSwap");
+});
 
 // Endpoint para recibir mensajes del cliente
 app.post('/messages', async (req, res) => {
