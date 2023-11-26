@@ -12,6 +12,7 @@ import { categoriaRouter } from "./src/routes/categoria.routes.js";
 import { autorRouter } from "./src/routes/autor.routes.js";
 import { editorialRouter } from "./src/routes/editorial.routes.js";
 import { libroRouter } from "./src/routes/libro.routes.js";
+import { usuarioRouter } from "./src/routes/usuario.routes.js";
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
    res.send("Bienvenidos al API de BookSwap");
 });
-app.use(categoriaRouter, autorRouter, editorialRouter,libroRouter);
+app.use(categoriaRouter, autorRouter, editorialRouter,libroRouter,usuarioRouter);
 
 // Endpoint para recibir mensajes del cliente
 app.post("/messages", async (req, res) => {
