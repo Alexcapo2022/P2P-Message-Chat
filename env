@@ -1,3 +1,0 @@
-DB_URI=mongodb+srv://20192659:euler2020@cluster0.d9h4rdp.mongodb.net/?retryWrites=true&w=majority
-POSTGRES_URI=postgres://bsadmin:aK%25c$DPt9RG$jA8@bookswapdb.postgres.database.azure.com:5432/bookswap
-JWT_SECRET=sunictm
