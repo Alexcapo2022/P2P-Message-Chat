@@ -41,6 +41,10 @@ export const Usuario = conexionPostgres.define("usuario",{
         type: DataTypes.STRING(9),
         field: "telefono",
     },
+    fotoperfil:{
+        type: DataTypes.STRING(20000),
+        field: "fotoperfil",
+    },
     estado:{
         type: DataTypes.INTEGER,
         defaultValue: 1,
