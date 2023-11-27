@@ -1,5 +1,5 @@
 import express from "express";
-import { createServer } from "https";
+import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import morgan from "morgan";
@@ -15,16 +15,10 @@ import { libroRouter } from "./src/routes/libro.routes.js";
 import { usuarioRouter } from "./src/routes/usuario.routes.js";
 import { pagoRouter } from "./src/routes/pago.routes.js";
 
-import fs from "fs";
-
-const key = fs.readFileSync('./key.pem');
-
-const cert = fs.readFileSync('./cert.pem');
-
 dotenv.config();
 
 const app = express();
-const server = createServer({key:key, cert:cert},app);
+const server = createServer(app);
 const io = new Server(server);
 
 //Middlewares
