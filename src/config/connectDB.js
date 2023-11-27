@@ -3,7 +3,7 @@ import { connect,set } from 'mongoose';
 import dotenv from "dotenv";
 
 dotenv.config();
-const uri = process.env.DB_URI;
+const uri = "mongodb+srv://20192659:euler2020@cluster0.d9h4rdp.mongodb.net/?retryWrites=true&w=majority";
 
 const connectDB = async () => {
   try {

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const conexionPostgres = new Sequelize(process.env.POSTGRES_URI, {
+export const conexionPostgres = new Sequelize("postgres://bsadmin:aK%25c$DPt9RG$jA8@bookswapdb.postgres.database.azure.com:5432/bookswap", {
    dialect: "postgres",
    dialectOptions: {
       ssl: { require: true, rejectUnauthorized: false },
