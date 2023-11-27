@@ -78,7 +78,7 @@ export const perfil = async (req, res) => {
 export const actualizarUsuario = async (req, res) => {
   try {
     const { usuario_id } = req.user;
-    const { nombre, apellido, dni, telefono, direccion,correo,password,fotoperfil } = req.body;
+    const { nombre, apellido, dni, telefono, direccion, correo, password, fotoperfil } = req.body;
 
     // Actualizar la información del usuario
     const usuario = await Usuario.findByPk(usuario_id, {
@@ -88,7 +88,12 @@ export const actualizarUsuario = async (req, res) => {
     if (!usuario) {
       return res.status(404).json(response(false, "Usuario no encontrado", null));
     }
+
     const hashedPassword = await encriptarPassword(password);
+
+    console.log('Contraseña original:', password);
+    console.log('Contraseña hasheada:', hashedPassword);
+
     // Actualizar campos específicos del usuario
     usuario.nombre = nombre;
     usuario.apellido = apellido;
