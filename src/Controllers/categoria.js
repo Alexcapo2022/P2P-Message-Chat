@@ -1,9 +1,13 @@
 import { response } from "../Utils/responses.js";
-import { Categoria,Libro } from "../models/Categoria.js";
+import { Categoria } from "../models/Categoria.js";
+import { Libro } from "../models/Libro.js";
 
 export const listarCategorias = async (req,res) => {
   try{
-    const lista = await Categoria.findAll({where: {estado: 1}});
+    const lista = await Categoria.findAll({
+      where: {estado: 1},
+      order:[['nombre','ASC']],
+    });
     let combo = [];
     if(lista.length > 0){
       lista.forEach((item) => {
