@@ -25,12 +25,12 @@ const getAccessToken = async () => {
 
 export const getSessionToken = async (req, res) => {
    try {
-    const {monto, ip} = req.body;
+      const { monto, ip } = req.body;
       const token = await getAccessToken();
       if (token === "") {
          return res.status(500).json(response(false, "Error al obtener el token", null));
       }
-      console.log(token)
+
       const bodyPost = {
          channel: "web",
          amount: monto,
@@ -52,14 +52,54 @@ export const getSessionToken = async (req, res) => {
          },
          body: JSON.stringify(bodyPost),
       });
-      if(sessionResponse.status !== 200){
+      if (sessionResponse.status !== 200) {
          return res.status(500).json(response(false, "Error al obtener el token", null));
       }
       const data = await sessionResponse.json();
 
-      return res.status(200).json(response(true, "Token de acceso", {sessionToken: data.sessionKey}));
+      return res
+         .status(200)
+         .json(response(true, "Token de acceso", { sessionToken: data.sessionKey }));
    } catch (err) {
       console.log(err);
       return res.status(500).json(response(false, "Error al obtener el token", err));
+   }
+};
+
+export const getTransactionAuthorization = async (req, res) => {
+   try {
+      const { transactionToken, monto } = req.body;
+      const token = await getAccessToken();
+      if (token === "") {
+         return res.status(500).json(response(false, "Error al obtener el token", null));
+      }
+      const bodyPost = {
+         channel: "web",
+         captureType: "manual",
+         countable: true,
+         order: {
+            tokenId: transactionToken,
+            purchaseNumber: 2020100901, //generar uno en back
+            amount: monto,
+            currency: "PEN",
+         },
+      };
+      const transactionResponse = await fetch(URL_NIUBIZ.transaction_auth, {
+         method: "POST",
+         headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(bodyPost),
+      });
+      console.log(transactionResponse)
+      if (transactionResponse.status !== 200) {
+         return res.status(500).json(response(false, "Error al confirmar la transacción", null));
+      }
+      const data = await transactionResponse.json();
+      console.log(data);
+      return res.status(200).json(response(true, "Transacción exitosa", data));
+   } catch (err) {
+      console.log(err);
    }
 };
