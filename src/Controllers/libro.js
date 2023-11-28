@@ -118,6 +118,7 @@ export const listarLibrosPorCategoria = async (req, res) => {
 
  export const crearLibro = async (req, res) => {
   try {
+    const { usuario_id } = req.user;
     const {
       titulo,
       estado_libro,
@@ -133,7 +134,6 @@ export const listarLibrosPorCategoria = async (req, res) => {
       categoria,
     } = req.body;
     console.log(titulo)
-    // Realiza alguna validación de datos aquí si es necesario
 
     // Busca o crea el autor
     const [nuevoAutor] = await Autor.findOrCreate({
@@ -164,7 +164,9 @@ export const listarLibrosPorCategoria = async (req, res) => {
       autor_id: nuevoAutor.autor_id,
       editorial_id: nuevaEditorial.editorial_id,
       categoria_id: nuevaCategoria.categoria_id,
+      vendedor_id: usuario_id,
     });
+
 
     // Responde con el libro creado
     return res.status(200).json(response(true, 'Libro creado', nuevoLibro));
