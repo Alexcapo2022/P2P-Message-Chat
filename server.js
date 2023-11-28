@@ -6,6 +6,7 @@ import morgan from "morgan";
 import connectDB from "./src/config/connectDB.js";
 
 import Message from "./src/models/Message.js";
+import Post from "./src/models/post.js";
 import dotenv from "dotenv";
 import { conexionPostgres } from "./src/config/sequelize.js";
 import { categoriaRouter } from "./src/routes/categoria.routes.js";
@@ -61,6 +62,7 @@ app.post("/messages", async (req, res) => {
 });
 
 // Ruta para obtener todos los mensajes
+
 app.get("/messages", async (req, res) => {
    try {
       // Obtener todos los mensajes de la base de datos
@@ -73,6 +75,7 @@ app.get("/messages", async (req, res) => {
       res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
    }
 });
+
 
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static("public"));
