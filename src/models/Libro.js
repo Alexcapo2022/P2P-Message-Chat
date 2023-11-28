@@ -3,6 +3,7 @@ import { conexionPostgres } from "../config/sequelize.js";
 import { Autor } from "./Autor.js";
 import { Editorial } from "./Editorial.js";
 import { Categoria } from "./Categoria.js";
+import { Usuario } from "./Usuario.js";
 
 export const Libro = conexionPostgres.define(
    "libro",
