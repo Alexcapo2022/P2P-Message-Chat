@@ -1,5 +1,6 @@
 import { estadoLibro, estadoOrden } from "../Utils/constants.js";
 import { response } from "../Utils/responses.js";
+import { Libro } from "../models/Libro.js";
 import { Orden } from "../models/Orden.js";
 import { Orden_Detalle } from "../models/OrdenDetalle.js";
 import { actualizarEstadoLibro } from "./libro.js";
