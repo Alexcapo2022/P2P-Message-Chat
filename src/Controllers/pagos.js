@@ -68,22 +68,25 @@ export const getSessionToken = async (req, res) => {
 
 export const getTransactionAuthorization = async (req, res) => {
    try {
-      const { transactionToken, monto } = req.body;
+      const { transactionToken } = req.body;
+      const { monto, orden } = req.query;
       const token = await getAccessToken();
       if (token === "") {
          return res.status(500).json(response(false, "Error al obtener el token", null));
       }
+      
       const bodyPost = {
          channel: "web",
          captureType: "manual",
          countable: true,
          order: {
             tokenId: transactionToken,
-            purchaseNumber: 2020100901, //generar uno en back
+            purchaseNumber: orden, //generar uno en back
             amount: monto,
             currency: "PEN",
          },
       };
+
       const transactionResponse = await fetch(URL_NIUBIZ.transaction_auth, {
          method: "POST",
          headers: {
@@ -92,14 +95,17 @@ export const getTransactionAuthorization = async (req, res) => {
          },
          body: JSON.stringify(bodyPost),
       });
-      console.log(transactionResponse)
+
       if (transactionResponse.status !== 200) {
-         return res.status(500).json(response(false, "Error al confirmar la transacción", null));
+         return res.status(transactionResponse.status).json(response(false, "Error al confirmar la transacción NIUBIZ", transactionResponse.text()));
       }
+
       const data = await transactionResponse.json();
-      console.log(data);
-      return res.status(200).json(response(true, "Transacción exitosa", data));
+      console.log(data)
+
+      return res.redirect("http://localhost:5173/")
    } catch (err) {
       console.log(err);
+      return res.status(500).json(response(false, "Error al confirmar el pago", null));
    }
 };
