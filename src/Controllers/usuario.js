@@ -79,7 +79,7 @@ export const actualizarUsuario = async (req, res) => {
   try {
     const { usuario_id } = req.user;
     const { nombre, apellido, dni, telefono, direccion, correo, password, fotoperfil } = req.body;
-
+    console.log(req.body)
     // Actualizar la información del usuario
     const usuario = await Usuario.findByPk(usuario_id, {
       include: [{ model: Direccion, as: 'direccion' }],
@@ -88,11 +88,13 @@ export const actualizarUsuario = async (req, res) => {
     if (!usuario) {
       return res.status(404).json(response(false, "Usuario no encontrado", null));
     }
+    if(password){
+      const hashedPassword = await encriptarPassword(password);
+      usuario.password = hashedPassword;
+    }
 
-    const hashedPassword = await encriptarPassword(password);
-
-    console.log('Contraseña original:', password);
-    console.log('Contraseña hasheada:', hashedPassword);
+    // console.log('Contraseña original:', password);
+    // console.log('Contraseña hasheada:', hashedPassword);
 
     // Actualizar campos específicos del usuario
     usuario.nombre = nombre;
@@ -100,7 +102,6 @@ export const actualizarUsuario = async (req, res) => {
     usuario.dni = dni;
     usuario.telefono = telefono;
     usuario.correo = correo;
-    usuario.password = hashedPassword;
     usuario.fotoperfil = fotoperfil;
 
     // Guardar los cambios en la base de datos
