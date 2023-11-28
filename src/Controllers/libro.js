@@ -29,3 +29,18 @@ export const obtenerLibro = async (req, res) => {
       return res.status(500).json(response(false, "Error al obtener el libro", null));
    }
 };
+
+export const actualizarEstadoLibro = async (id, estado) => {
+   try {
+      const libro = await Libro.findByPk(Number(id));
+      if (!libro) {
+         return false;
+      }
+      libro.estado = estado;
+      await libro.save();
+      return true;
+   } catch (err) {
+      console.log(err);
+      return false;
+   }
+}

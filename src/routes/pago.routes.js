@@ -5,4 +5,4 @@ import { getUsuarioAutenticado } from "../Utils/middlewares.js";
 export const pagoRouter = Router();
 
 pagoRouter.route("/pago").post(getUsuarioAutenticado,getSessionToken)
-pagoRouter.route("/pago/confirmacion").post(getUsuarioAutenticado,getTransactionAuthorization)
+pagoRouter.route("/pago/confirmacion/").post(getTransactionAuthorization)

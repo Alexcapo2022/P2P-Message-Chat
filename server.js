@@ -26,6 +26,7 @@ const io = new Server(server);
 app.use(cors());
 // Middleware para analizar el cuerpo de las solicitudes
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 //RUTAS
@@ -222,8 +223,8 @@ server.listen(PORT, async () => {
    console.log(`Servidor escuchando en el puerto ${PORT}`);
    try {
       // Conectar a la base de datos MongoDB
-      await connectDB();
-      await conexionPostgres.sync({ force: false });
+      connectDB();
+      await conexionPostgres.sync({ alter: false });
       console.log("Base de datos Postgres sincronizada");
    } catch (err) {
       console.log(err);
