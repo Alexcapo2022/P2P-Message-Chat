@@ -4,6 +4,9 @@ import { Autor } from "../models/Autor.js";
 import { Categoria } from "../models/Categoria.js";
 import { Editorial } from "../models/Editorial.js";
 import { Libro } from "../models/Libro.js";
+import { Imagen } from "../models/Imagen.js";
+import { Usuario } from "../models/Usuario.js";
+import { Direccion } from "../models/Direccion.js";
 
 //Recibe un id de libro y retorna el libro
 export const obtenerLibro = async (req, res) => {
@@ -12,12 +15,19 @@ export const obtenerLibro = async (req, res) => {
    try {
       const libro = await Libro.findByPk(Number(id), {
          attributes: {
-            exclude: ["createdAt", "updatedAt", "autor_id", "categoria_id", "editorial_id"],
+            exclude: ["createdAt", "updatedAt", "autor_id" , "categoria_id", "editorial_id"],
          },
          include: [
             { model: Categoria, as: "categoria", attributes: ["nombre"] },
             { model: Autor, as: "autor", attributes: ["nombre"] },
             { model: Editorial, as: "editorial", attributes: ["nombre"] },
+            { model: Imagen, as: "imagen", attributes: ["url"], limit: 1 },
+            { model: Usuario, as: "vendedor",
+              attributes: ["nombre", "apellido", "usuario_id"],
+              include: [
+                { model: Direccion, as:"direccion", attributes: ["distrito"], },
+              ],
+            },
          ],
       });
       console.log(libro);
@@ -25,7 +35,29 @@ export const obtenerLibro = async (req, res) => {
       if (!libro) {
          return res.status(404).json(response(false, "Libro no encontrado", null));
       }
-      return res.status(200).json(response(true, "Libro encontrado", libro));
+
+      const libroFormato = {
+        id: libro.libro_id,
+        titulo: libro.titulo,
+        sinopsis: libro.sinopsis,
+        idioma:libro.idioma,
+        numero_paginas:libro.numero_paginas,
+        precio: libro.precio,
+        encuadernacion: libro.encuadernacion,
+        estado: libro.estado_libro,
+        categoria: libro.categoria.nombre,
+        imagen_url: libro.imagen.length > 0 ? libro.imagen[0].url : null,
+        autor: libro.autor.nombre,
+        editorial: libro.editorial.nombre,
+        vendedor: {
+            id: libro.vendedor.usuario_id,
+            nombre: libro.vendedor.nombre,
+            apellido: libro.vendedor.apellido,
+            ubicacion: libro.vendedor.direccion.distrito,
+        },
+      };
+      
+      return res.status(200).json(response(true, "Libro encontrado", libroFormato));
    } catch (err) {
       console.log(err);
       return res.status(500).json(response(false, "Error al obtener el libro", null));
@@ -33,61 +65,54 @@ export const obtenerLibro = async (req, res) => {
 };
 
 //Recibe una cadena y retorna una lista de libros
-export const buscarLibros = async (req, res) => {
+export const obtenerLibros = async (req, res) => {
 
-  try {
-    const { busqueda } = req.body;
-    console.log(busqueda)
-
-    const librosEncontrados = await Libro.findAll({
-      attributes: ['libro_id', 'titulo', 'estado_libro', 'precio'],
+  try{
+    const lista = await Libro.findAll({
+      attributes: ["libro_id","titulo","sinopsis","precio","estado_libro","encuadernacion"],
       include: [
-        {
-          model: Autor, as: 'autor', attributes: ['nombre'],
-          where: { nombre: { [Op.iLike]: `%${busqueda}%`, },},
-        },
-        {
-          model: Categoria, as: 'categoria', attributes: ['nombre'],
-          where: { nombre: {[Op.iLike]: `%${busqueda}%`,}, },
+        { model: Categoria, as: "categoria",attributes: ["nombre"],},
+        { model: Imagen, as: "imagen", attributes: ["url"], limit: 1 },
+        { model: Autor, as: "autor", attributes: ["nombre"], },
+        { model: Editorial, as: "editorial" , attributes: ["nombre"], },
+        { model: Usuario, as: "vendedor",
+          attributes: ["nombre", "apellido", "usuario_id"],
+          include: [
+            { model: Direccion, as:"direccion", attributes: ["distrito"], },
+          ],
         },
       ],
-      where: {
-        [Op.or]: [
-          {
-            titulo: {
-              [Op.iLike]: `%${busqueda}%`,},
-          },
-          {
-            '$autor.nombre$': {
-              [Op.iLike]: `%${busqueda}%`,},
-          },
-          {
-            '$categoria.nombre$': {
-              [Op.iLike]: `%${busqueda}%`,},
-          },
-        ],
-      },
+      where: {estado: 1},
     });
-    console.log(librosEncontrados);
 
-   // let libros = []
+    let combo=[];
 
+    if(lista.length > 0){
+      lista.forEach((item) => {
+        combo.push({
+          id: item.libro_id,
+          titulo: item.titulo,
+          sinopsis: item.sinopsis,
+          precio: item.precio,
+          encuadernacion: item.encuadernacion,
+          estado:item.estado_libro,
+          categoria: item.categoria.nombre,
+          imagen_url: item.imagen.length > 0 ? item.imagen[0].url : null,
+          autor: item.autor.nombre,
+          editorial:item.editorial.nombre,
+          vendedor:{
+            id:item.vendedor.usuario_id,
+            nombre: item.vendedor.nombre,
+            apellido:item.vendedor.apellido,
+            ubicacion: item.vendedor.direccion.distrito,
+          },
+        })
+      })
+    }
 
-   //  if(librosEncontrados.length>0){
-   //    librosEncontrados.forEach((item) => {
-   //       libros.push({
-   //         id: item.libro_id,
-   //         title: item.titulo,
-   //         book_state: item.estado_libro,
-   //         price: item.price,
-   //         //------------ vendedor: usuario_id (fk) / ciudad: direccion.ciudad on usuario_id
-   //       })
-   //     })
-   //  }
-
-    return res.status(200).json(response(true, "Se encontraron libros", librosEncontrados));
-  } catch (error) {
-    console.error(error);
+    return res.status(200).json(response(true, "Se encontraron libros", combo));
+  } catch (err) {
+    console.log(err);
     return res.status(500).json(response(false, "Error al buscar libros", null));
   }
 };
@@ -175,3 +200,5 @@ export const listarLibrosPorCategoria = async (req, res) => {
     return res.status(500).json(response(false, 'Error al crear libro', null));
   }
 };
+
+

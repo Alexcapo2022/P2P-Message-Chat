@@ -4,6 +4,8 @@ import { Autor } from "./Autor.js";
 import { Editorial } from "./Editorial.js";
 import { Categoria } from "./Categoria.js";
 import { Usuario } from "./Usuario.js";
+import { Imagen } from "./Imagen.js";
+import { Direccion } from "./Direccion.js";
 
 export const Libro = conexionPostgres.define(
    "libro",
@@ -88,3 +90,8 @@ Categoria.hasMany(Libro, { foreignKey: "categoria_id" });
 
 Libro.belongsTo(Usuario, { foreignKey: "vendedor_id", as: "vendedor" });
 Usuario.hasMany(Libro, { foreignKey: "vendedor_id" });
+
+Libro.hasMany(Imagen, { foreignKey: 'libro_id', as: 'imagen' });
+Imagen.belongsTo(Libro, { foreignKey: 'libro_id' });
+
+Usuario.belongsTo(Direccion, { foreignKey: 'usuario_id' });
