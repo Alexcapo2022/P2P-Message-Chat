@@ -86,7 +86,7 @@ Editorial.hasMany(Libro, { foreignKey: "editorial_id" });
 Libro.belongsTo(Categoria, { foreignKey: "categoria_id", as: "categoria" });
 Categoria.hasMany(Libro, { foreignKey: "categoria_id" });
 
-Libro.belongsToMany(Orden, {
-   through: OrdenDetalle,
-   foreignKey: 'libro_id',
- });
+// Libro.belongsToMany(Orden, {
+//    through: OrdenDetalle,
+//    foreignKey: 'libro_id',
+//  });

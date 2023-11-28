@@ -46,7 +46,7 @@ Usuario.hasMany(Orden, { foreignKey: "comprador_id" });
 Orden.belongsTo(MetodoPago, { foreignKey: "metodopago_id", as: "metodopago" });
 MetodoPago.hasMany(Orden, { foreignKey: "metodopago_id" });
 
-Orden.belongsToMany(Libro, {
-   through: OrdenDetalle,
-   foreignKey: 'orden_id',
- });
+// Orden.belongsToMany(Libro, {
+//    through: OrdenDetalle,
+//    foreignKey: 'orden_id',
+//  });
