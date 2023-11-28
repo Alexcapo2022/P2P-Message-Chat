@@ -14,6 +14,9 @@ import { editorialRouter } from "./src/routes/editorial.routes.js";
 import { libroRouter } from "./src/routes/libro.routes.js";
 import { usuarioRouter } from "./src/routes/usuario.routes.js";
 import { pagoRouter } from "./src/routes/pago.routes.js";
+import { ordenRouter } from "./src/routes/orden.routes.js";
+import { metodoPagoRouter } from "./src/routes/metodoPago.routes.js";
+
 
 dotenv.config();
 
@@ -31,7 +34,16 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
    res.send("Bienvenidos al API de BookSwap");
 });
-app.use(categoriaRouter, autorRouter, editorialRouter,libroRouter,usuarioRouter,pagoRouter);
+app.use(
+   categoriaRouter,
+   autorRouter,
+   editorialRouter,
+   libroRouter,
+   usuarioRouter,
+   pagoRouter,
+   ordenRouter,
+   metodoPagoRouter,
+);
 
 // Endpoint para recibir mensajes del cliente
 app.post("/messages", async (req, res) => {
@@ -51,17 +63,16 @@ app.post("/messages", async (req, res) => {
 // Ruta para obtener todos los mensajes
 app.get("/messages", async (req, res) => {
    try {
-     // Obtener todos los mensajes de la base de datos
-     const messages = await Message.find();
- 
-     // Devolver los mensajes como respuesta
-     res.status(200).json(messages);
-   } catch (error) {
-     console.error("Error al obtener los mensajes de la base de datos:", error);
-     res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
-   }
- });
+      // Obtener todos los mensajes de la base de datos
+      const messages = await Message.find();
 
+      // Devolver los mensajes como respuesta
+      res.status(200).json(messages);
+   } catch (error) {
+      console.error("Error al obtener los mensajes de la base de datos:", error);
+      res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
+   }
+});
 
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static("public"));
@@ -100,11 +111,10 @@ server.listen(PORT, async () => {
    console.log(`Servidor escuchando en el puerto ${PORT}`);
    try {
       // Conectar a la base de datos MongoDB
-      connectDB();
-      await conexionPostgres.sync({force: false});
+      await connectDB();
+      await conexionPostgres.sync({ force: false });
       console.log("Base de datos Postgres sincronizada");
    } catch (err) {
       console.log(err);
    }
 });
-

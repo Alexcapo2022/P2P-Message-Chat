@@ -4,7 +4,7 @@ import { conexionPostgres } from "../config/sequelize.js";
 export const MetodoPago = conexionPostgres.define(
   "metodopago",
   {
-    editorial_id: {
+    metodopago_id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -25,6 +25,11 @@ export const MetodoPago = conexionPostgres.define(
       type: DataTypes.DATE,
       allowNull: false,
       field: "fecha_actualizacion",
+    },
+    estado: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      field: "estado",
     },
   },
   {
