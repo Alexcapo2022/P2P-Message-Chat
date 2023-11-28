@@ -112,7 +112,7 @@ server.listen(PORT, async () => {
    try {
       // Conectar a la base de datos MongoDB
       await connectDB();
-      await conexionPostgres.sync({ force: false });
+      await conexionPostgres.sync({ alter: true });
       console.log("Base de datos Postgres sincronizada");
    } catch (err) {
       console.log(err);
