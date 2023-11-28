@@ -78,19 +78,30 @@ app.get("/messages", async (req, res) => {
    }
  });
 
-app.post("/posts", async (req, res) => {
-   const { id, nombre, correo, imagenPerfil, like, numComentarios, comentarios, horaPublicacion } = req.body;
-
+ app.post("/posts", async (req, res) => {
+   const { id, PostText, PostImage, User, Like, NumeroDeComentarios, Comentarios} = req.body;
+ 
    try {
-      // Guardar el mensaje en la base de datos utilizando el modelo
-      const post = new Post({ id, nombre, correo, imagenPerfil, like, numComentarios, comentarios, horaPublicacion });
-      await post.save();
-      res.status(201).json(post);
+     // Guardar el mensaje en la base de datos utilizando el modelo
+     const post = new Post({
+       id,
+       PostText,
+       PostImage,
+       User,
+       Like,
+       NumeroDeComentarios,
+       Comentarios,
+     });
+ 
+     await post.save();
+     res.status(201).json(post);
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Error al guardar el mensaje en la base de datos." });
+     console.error(error);
+     res.status(500).json({ error: "Error al guardar el mensaje en la base de datos." });
    }
-})
+ });
+ 
+ 
 
 app.put("/posts/:id", async (req, res) => {
    const { id } = req.params;
@@ -123,26 +134,29 @@ app.delete("/posts/:id", async (req, res) => {
    }
 });
 
-app.put("/posts/:postId/like", async (req, res) => {
+app.post("/posts/:postId/like", async (req, res) => {
    const { postId } = req.params;
-
+ 
    try {
-      const post = await Post.findById(postId);
-
-      if (!post) {
-        return res.status(404).json({ message: 'No se encontró el post con el ID proporcionado.' });
-      }
-
-      post.like = (parseInt(post.like) || 0) + 1;
-
-      const updatedPost = await post.save();
-
-      res.status(200).json(updatedPost);
+     const post = await Post.findByIdAndUpdate(
+       postId,
+       { $inc: { Like: 1 } },
+       { new: true, runValidators: true, useFindAndModify: false }
+     );
+ 
+     if (!post) {
+       return res.status(404).json({ message: 'No se encontró el post con el ID proporcionado.' });
+     }
+ 
+     res.status(200).json(post);
    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error al agregar un like a la publicación' });
+     console.error(error);
+     res.status(500).json({ message: 'Error al agregar un like a la publicación' });
    }
-});
+ });
+ 
+
+
 
 app.post("/posts/:postId/comment", async (req, res) => {
    try {

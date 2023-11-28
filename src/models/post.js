@@ -3,38 +3,43 @@ import { Schema, model } from 'mongoose';
 const postSchema = new Schema({
   id: {
     type: Number,
-    required: true,
+    required: false,
   },
-  nombre: {
+  PostText: {
     type: String,
-    required: true,
+    required: false,
   },
-  correo: {
+  PostImage: {
     type: String,
-    required: true,
+    default: '', // Puedes cambiarlo a la URL predeterminada si lo deseas
+    required: false,
   },
-  imagenPerfil: {
+  User: {
     type: String,
-    default: 'url_imagen1.jpg',
+    required: false,
   },
-  like: {
-    type: String,
-    default: '0',
-  },
-  numComentarios: {
+  Like: {
     type: Number,
     default: 0,
   },
-  comentarios: [{
-    type: Schema.Types.ObjectId, // Corregido a Schema.Types.ObjectId
-    ref: 'Comment' // Nombre del modelo de comentarios
-  }],
-  horaPublicacion: {
-    type: String,
-    default: new Date().toISOString(),
+  NumeroDeComentarios: {
+    type: Number,
+    default: 0,
   },
+  Comentarios: [
+    {
+      Usuario: {
+        type: String,
+        required: false,
+      },
+      Comentario: {
+        type: String,
+        required: false,
+      },
+    }
+  ],
 }, {
-  collection: 'Posts', // Define la colección en la base de datos
+  collection: 'Posts',
   versionKey: false,
 });
 
