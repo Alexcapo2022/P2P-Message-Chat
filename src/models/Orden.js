@@ -29,14 +29,9 @@ export const Orden = conexionPostgres.define(
          field: "monto_total",
       },
       estado: {
-         type: DataTypes.INTEGER,
-         defaultValue: 1,
-         field: "estado",
-      },
-      estado_orden: {
-         type: DataTypes.STRING(255),
-         allowNull: false,
-         field: "estado_orden",
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+        field: "estado",
       },
    },
    {
@@ -45,11 +40,13 @@ export const Orden = conexionPostgres.define(
    }
 );
 
-Usuario.hasMany(Orden, { foreignKey: "comprador_id"});
 Orden.belongsTo(Usuario, { foreignKey: "comprador_id", as: "comprador" });
+Usuario.hasMany(Orden, { foreignKey: "comprador_id" });
 
-Usuario.hasMany(Orden, { foreignKey: "vendedor_id" });
-Orden.belongsTo(Usuario, { foreignKey: "vendedor_id", as: "vendedor" });
+Orden.belongsTo(MetodoPago, { foreignKey: "metodopago_id", as: "metodopago" });
+MetodoPago.hasMany(Orden, { foreignKey: "metodopago_id" });
 
-MetodoPago.hasMany(Orden, { foreignKey: "metodopago_id"});
-Orden.belongsTo(MetodoPago, { foreignKey: "metodopago_id", as: "metodo_pago" });
+// Orden.belongsToMany(Libro, {
+//    through: OrdenDetalle,
+//    foreignKey: 'orden_id',
+//  });

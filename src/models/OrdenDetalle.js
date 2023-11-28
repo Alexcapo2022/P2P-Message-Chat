@@ -1,14 +1,12 @@
-import { conexionPostgres } from "../config/sequelize.js";
-import { Libro } from "./Libro.js";
 import { Orden } from "./Orden.js";
+import { Libro } from "./Libro.js";
 
-export const Orden_Detalle = conexionPostgres.define(
-  'orden_detalle',{},{
-    timestamps: false,
-    modelName: "orden_detalle",
-    freezeTableName: true,
-  }
-)
-
-Libro.belongsToMany(Orden, { through: Orden_Detalle, uniqueKey: "orden_detalle_id", foreignKey: "libro_id"});
-Orden.belongsToMany(Libro, { through: Orden_Detalle, uniqueKey: "orden_detalle_id", foreignKey: "orden_id"});
+export const OrdenDetalle = sequelize.define('OrdenDetalle', {
+    cantidad: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  });
+  
+  OrdenDetalle.belongsTo(Orden, { foreignKey: 'orden_id' });
+  OrdenDetalle.belongsTo(Libro, { foreignKey: 'libro_id' });

@@ -202,3 +202,18 @@ export const listarLibrosPorCategoria = async (req, res) => {
 };
 
 
+
+export const actualizarEstadoLibro = async (id, estado) => {
+   try {
+      const libro = await Libro.findByPk(Number(id));
+      if (!libro) {
+         return false;
+      }
+      libro.estado = estado;
+      await libro.save();
+      return true;
+   } catch (err) {
+      console.log(err);
+      return false;
+   }
+}
