@@ -76,7 +76,6 @@ app.get("/messages", async (req, res) => {
    }
 });
 
-
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static("public"));
 
