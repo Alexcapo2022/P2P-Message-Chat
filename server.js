@@ -48,6 +48,21 @@ app.post("/messages", async (req, res) => {
    }
 });
 
+// Ruta para obtener todos los mensajes
+app.get("/messages", async (req, res) => {
+   try {
+     // Obtener todos los mensajes de la base de datos
+     const messages = await Message.find();
+ 
+     // Devolver los mensajes como respuesta
+     res.status(200).json(messages);
+   } catch (error) {
+     console.error("Error al obtener los mensajes de la base de datos:", error);
+     res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
+   }
+ });
+
+
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static("public"));
 
