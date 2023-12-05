@@ -39,6 +39,7 @@ export const obtenerLibro = async (req, res) => {
       const libroFormato = {
         id: libro.libro_id,
         titulo: libro.titulo,
+        isbn:libro.isbn,
         sinopsis: libro.sinopsis,
         idioma:libro.idioma,
         numero_paginas:libro.numero_paginas,
@@ -117,21 +118,35 @@ export const obtenerLibros = async (req, res) => {
   }
 };
 
-export const listarLibrosPorCategoria = async (req, res) => {
-   const { categoriaId } = req.params;
+export const obtenerLibrosPorCategoria = async (req, res) => {
+   const { id } = req.params;
  
    try {
      //Busca por ID en la tabla categoria
-     const categoria = await Categoria.findByPk(categoriaId);
+     const categoria = await Categoria.findByPk(Number(id));
  
      //Si no encuentra ninguno, retorna error (lo cual no debería pasar)
      if (!categoria) {
-       return res.status(404).json(response(false, 'Categoría no encontrada', null));
+       return res.status(404).json(response(false, `Categoría ${id} no encontrada`, null));
      }
  
      const libros = await Libro.findAll({
-       where: { categoria_id: categoriaId },
-       //include attributes
+      attributes: ["libro_id","titulo","sinopsis","precio","estado_libro","encuadernacion"],
+      include: [
+        { model: Categoria, as: "categoria",attributes: ["nombre"],},
+        { model: Imagen, as: "imagen", attributes: ["url"], limit: 1 },
+        { model: Autor, as: "autor", attributes: ["nombre"], },
+        { model: Editorial, as: "editorial" , attributes: ["nombre"], },
+        { model: Usuario, as: "vendedor",
+          attributes: ["nombre", "apellido", "usuario_id"],
+          include: [
+            { model: Direccion, as:"direccion", attributes: ["distrito"], },
+          ],
+        },
+      ],
+       where: { categoria_id: id,
+                estado: 1 },
+
      });
  
      return res.status(200).json(response(true, 'Libros por categoría', libros));
