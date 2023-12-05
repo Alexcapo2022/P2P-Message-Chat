@@ -15,6 +15,8 @@ import { editorialRouter } from "./src/routes/editorial.routes.js";
 import { libroRouter } from "./src/routes/libro.routes.js";
 import { usuarioRouter } from "./src/routes/usuario.routes.js";
 import { pagoRouter } from "./src/routes/pago.routes.js";
+import { ordenRouter } from "./src/routes/orden.routes.js";
+import { metodoPagoRouter } from "./src/routes/metodoPago.routes.js";
 
 dotenv.config();
 
@@ -33,7 +35,16 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
    res.send("Bienvenidos al API de BookSwap");
 });
-app.use(categoriaRouter, autorRouter, editorialRouter,libroRouter,usuarioRouter,pagoRouter);
+app.use(
+   categoriaRouter,
+   autorRouter,
+   editorialRouter,
+   libroRouter,
+   usuarioRouter,
+   pagoRouter,
+   ordenRouter,
+   metodoPagoRouter
+);
 
 // Endpoint para recibir mensajes del cliente
 app.post("/messages", async (req, res) => {
@@ -54,54 +65,52 @@ app.post("/messages", async (req, res) => {
 
 app.get("/messages", async (req, res) => {
    try {
-     // Obtener todos los mensajes de la base de datos
-     const messages = await Message.find();
- 
-     // Devolver los mensajes como respuesta
-     res.status(200).json(messages);
-   } catch (error) {
-     console.error("Error al obtener los mensajes de la base de datos:", error);
-     res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
-   }
- });
+      // Obtener todos los mensajes de la base de datos
+      const messages = await Message.find();
 
- app.get("/posts", async (req, res) => {
-   try {
-     // Obtener todos los mensajes de la base de datos
-     const posts = await Post.find();
- 
-     // Devolver los mensajes como respuesta
-     res.status(200).json(posts);
+      // Devolver los mensajes como respuesta
+      res.status(200).json(messages);
    } catch (error) {
-     console.error("Error al obtener los mensajes de la base de datos:", error);
-     res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
+      console.error("Error al obtener los mensajes de la base de datos:", error);
+      res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
    }
- });
+});
 
- app.post("/posts", async (req, res) => {
-   const { id, PostText, PostImage, User, Like, NumeroDeComentarios, Comentarios} = req.body;
- 
+app.get("/posts", async (req, res) => {
    try {
-     // Guardar el mensaje en la base de datos utilizando el modelo
-     const post = new Post({
-       id,
-       PostText,
-       PostImage,
-       User,
-       Like,
-       NumeroDeComentarios,
-       Comentarios,
-     });
- 
-     await post.save();
-     res.status(201).json(post);
+      // Obtener todos los mensajes de la base de datos
+      const posts = await Post.find();
+
+      // Devolver los mensajes como respuesta
+      res.status(200).json(posts);
    } catch (error) {
-     console.error(error);
-     res.status(500).json({ error: "Error al guardar el mensaje en la base de datos." });
+      console.error("Error al obtener los mensajes de la base de datos:", error);
+      res.status(500).json({ error: "Error al obtener los mensajes de la base de datos." });
    }
- });
- 
- 
+});
+
+app.post("/posts", async (req, res) => {
+   const { id, PostText, PostImage, User, Like, NumeroDeComentarios, Comentarios } = req.body;
+
+   try {
+      // Guardar el mensaje en la base de datos utilizando el modelo
+      const post = new Post({
+         id,
+         PostText,
+         PostImage,
+         User,
+         Like,
+         NumeroDeComentarios,
+         Comentarios,
+      });
+
+      await post.save();
+      res.status(201).json(post);
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error al guardar el mensaje en la base de datos." });
+   }
+});
 
 app.put("/posts/:id", async (req, res) => {
    const { id } = req.params;
@@ -111,94 +120,99 @@ app.put("/posts/:id", async (req, res) => {
       res.status(200).json(updatedPost);
    } catch (error) {
       console.error(error);
-      res.status(500).json({ mensaje: 'Error al actualizar el post' });
+      res.status(500).json({ mensaje: "Error al actualizar el post" });
    }
 });
 
 app.delete("/posts/:id", async (req, res) => {
    const { id } = req.params;
- 
+
    try {
-     console.log("ID a eliminar:", id);
-     const post = await Post.findById(id);
- 
-     if (!post) {
-       return res.status(404).json({ mensaje: 'No se encontró el post con el ID proporcionado.' });
-     }
- 
-     await Post.findByIdAndDelete(id);
-     res.status(200).json({ mensaje: 'Post eliminado' });
+      console.log("ID a eliminar:", id);
+      const post = await Post.findById(id);
+
+      if (!post) {
+         return res
+            .status(404)
+            .json({ mensaje: "No se encontró el post con el ID proporcionado." });
+      }
+
+      await Post.findByIdAndDelete(id);
+      res.status(200).json({ mensaje: "Post eliminado" });
    } catch (error) {
-     console.error(error);
-     res.status(500).json({ mensaje: 'Error al eliminar el post' });
+      console.error(error);
+      res.status(500).json({ mensaje: "Error al eliminar el post" });
    }
 });
 
 app.post("/posts/:postId/like", async (req, res) => {
    const { postId } = req.params;
- 
+
    try {
-     const post = await Post.findByIdAndUpdate(
-       postId,
-       { $inc: { Like: 1 } },
-       { new: true, runValidators: true, useFindAndModify: false }
-     );
- 
-     if (!post) {
-       return res.status(404).json({ message: 'No se encontró el post con el ID proporcionado.' });
-     }
- 
-     res.status(200).json(post);
+      const post = await Post.findByIdAndUpdate(
+         postId,
+         { $inc: { Like: 1 } },
+         { new: true, runValidators: true, useFindAndModify: false }
+      );
+
+      if (!post) {
+         return res
+            .status(404)
+            .json({ message: "No se encontró el post con el ID proporcionado." });
+      }
+
+      res.status(200).json(post);
    } catch (error) {
-     console.error(error);
-     res.status(500).json({ message: 'Error al agregar un like a la publicación' });
+      console.error(error);
+      res.status(500).json({ message: "Error al agregar un like a la publicación" });
    }
- });
- 
-
-
+});
 
 app.post("/posts/:postId/comment", async (req, res) => {
    try {
-     const { postId } = req.params;
-     const commentDetails = req.body;
- 
-     if (!commentDetails.text || !commentDetails.userId) {
-       return res.status(400).json({ message: 'Se requiere un texto y un ID de usuario para crear un comentario.' });
-     }
- 
-     const post = await Post.findById(postId);
- 
-     if (!post) {
-       return res.status(404).json({ message: 'No se encontró el post con el ID proporcionado.' });
-     }
- 
-     const newComment = new Comment({
-       postId,
-       text: commentDetails.text,
-       userId: commentDetails.userId,
-       // Otros campos o detalles del comentario
-     });
- 
-     const savedComment = await newComment.save();
- 
-     const updatedPost = await Post.findByIdAndUpdate(
-       postId,
-       { $push: { comentarios: savedComment._id } },
-       { new: true }
-     );
- 
-     res.status(201).json({
-       message: 'Comentario creado exitosamente',
-       commentID: savedComment._id,
-       commentText: savedComment.text,
-       updatedPost
-     });
+      const { postId } = req.params;
+      const commentDetails = req.body;
+
+      if (!commentDetails.text || !commentDetails.userId) {
+         return res
+            .status(400)
+            .json({ message: "Se requiere un texto y un ID de usuario para crear un comentario." });
+      }
+
+      const post = await Post.findById(postId);
+
+      if (!post) {
+         return res
+            .status(404)
+            .json({ message: "No se encontró el post con el ID proporcionado." });
+      }
+
+      const newComment = new Comment({
+         postId,
+         text: commentDetails.text,
+         userId: commentDetails.userId,
+         // Otros campos o detalles del comentario
+      });
+
+      const savedComment = await newComment.save();
+
+      const updatedPost = await Post.findByIdAndUpdate(
+         postId,
+         { $push: { comentarios: savedComment._id } },
+         { new: true }
+      );
+
+      res.status(201).json({
+         message: "Comentario creado exitosamente",
+         commentID: savedComment._id,
+         commentText: savedComment.text,
+         updatedPost,
+      });
    } catch (error) {
-     console.error(error);
-     res.status(500).json({ message: 'Error al crear un comentario' });
+      console.error(error);
+      res.status(500).json({ message: "Error al crear un comentario" });
    }
- });
+});
 
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static("public"));
@@ -244,4 +258,3 @@ server.listen(PORT, async () => {
       console.log(err);
    }
 });
-

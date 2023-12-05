@@ -97,13 +97,15 @@ export const getTransactionAuthorization = async (req, res) => {
       });
 
       if (transactionResponse.status !== 200) {
-         return res.status(transactionResponse.status).json(response(false, "Error al confirmar la transacción NIUBIZ", transactionResponse.text()));
+         console.log(transactionResponse.status)
+         return res.redirect(String(process.env.URL_FRONTEND) + "confirmation?success=false")
+         // return res.status(transactionResponse.status).json(response(false, "Error al confirmar la transacción NIUBIZ", transactionResponse.text()));
       }
 
       const data = await transactionResponse.json();
       console.log(data)
 
-      return res.redirect("http://localhost:5173/")
+      return res.redirect(String(process.env.URL_FRONTEND) + "confirmation?success=true")
    } catch (err) {
       console.log(err);
       return res.status(500).json(response(false, "Error al confirmar el pago", null));
